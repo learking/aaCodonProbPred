@@ -1,4 +1,6 @@
 import sys
+import os
+sys.path.append(os.path.abspath("/home/kuangyu/Dropbox/research/MultinomProject/code/pyScripts"))
 from codon2AA_mapping import *
 
 def pw_rmMismatch(inputFile, outFile, mismatchFile):

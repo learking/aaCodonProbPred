@@ -87,4 +87,4 @@ if  __name__ =='__main__':
     inputFile = sys.argv[1]
     #outputFile = sys.argv[2]
     AApw = AApairwise(inputFile)
-    #AApw.getAAprob_onePos(1)
+    AApw.getAAprob_onePos(1)

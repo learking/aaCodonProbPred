@@ -11,7 +11,10 @@ class AApairwise:
     def __init__(self, pwFile):
         #init solvers
         ## first order solver
-        self.firstOrderSolver = aaProbSolver(firstOrderCoefFile)
+        fFirstOrder = open(firstOrderCoefFile, "r")
+        firstOrderCoefs = fFirstOrder.readlines()
+        fFirstOrder.close()
+        self.firstOrderSolver = aaProbSolver(firstOrderCoefs)
 
         self.aaDict = dict()
         self.saDict = dict()

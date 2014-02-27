@@ -64,22 +64,24 @@ class AApairwise:
 
         self.posList = sorted(map(int, self.aaDict.keys()))
 
-'''
+
     def getAAprob_onePos(self, pos):
         aaProbs = []
+        tmptotal = 0
         for aa in aaList:
             #calculate prob for this aa
             #first order
-            firstOrderProb = 0
-
+            firstOrderProb = self.firstOrderSolver.getCatProb(aa, [1,30])
+            tmptotal += firstOrderProb
             #simple check: first order probs should sum up to 1
 
             #second order
 
             #total prob
             
-            ##add total prob to aaProbs
-'''
+            ##add total prob to aaProb
+        print "the total:" + str(tmptotal)
+
 
 if  __name__ =='__main__':
     inputFile = sys.argv[1]

@@ -25,7 +25,7 @@ class aaProbSolver:
         #print str(sorted(self.catCoef.keys()))
 
         #find out reference codon
-        self.refCat = list(set(CatProbSolver.__possibleCodons) - set(self.catCoef.keys()))[0]
+        self.refCat = list(set(aaProbSolver.__possibleCodons) - set(self.catCoef.keys()))[0]
         #print self.refCat
 
     def getCatProb(self, queryCat, X):

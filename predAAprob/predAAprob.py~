@@ -1,17 +1,34 @@
 import sys
 from aaProbSolver import *
-
-#coef file and folders
-firstOrderCoefFile = '/home/kuangyu/workspace/aaCodonProbPred/coefs/aa_sa_coef.txt'
+import re
+import glob
+import math
 
 #'L' is the reference codon
 aaList = ['A','C','D','E','F','G','H','I','K','L','M','N','P','Q','R','S','T','V','W','Y']
 
+#coef file and folders
+firstOrderCoefFile = '/home/kuangyu/workspace/aaCodonProbPred/coefs/aa_sa_coef.txt'
+firstCondSecondFiles = glob.glob("/home/kuangyu/workspace/aaCodonProbPred/coefs/aa_firstCondSecond_coefs/*.txt")
+secondCondFirstFiles = glob.glob("/home/kuangyu/workspace/aaCodonProbPred/coefs/aa_secondCondFirst_coefs/*.txt")
+
 class AApairwise:
+    
+    __catPattern = re.compile(r"\_(\w+)\_coef\.txt")
+
     def __init__(self, pwFile):
         #init solvers
         ## first order solver
-        self.firstOrderSolver = aaProbSolver(firstOrderCoefFile)
+        fFirstOrder = open(firstOrderCoefFile, "r")
+        firstOrderCoefs = fFirstOrder.readlines()
+        fFirstOrder.close()
+        self.firstOrderSolver = aaProbSolver(firstOrderCoefs)
+
+	## second order solvers
+	### first conditioned on second
+	self.firstCondSecondSolvers = self.__constructSolvers__(firstCondSecondFiles)
+	### second conditioned on first
+	self.secondCondFirstSolvers = self.__constructSolvers__(secondCondFirstFiles)
 
         self.aaDict = dict()
         self.saDict = dict()
@@ -60,31 +77,79 @@ class AApairwise:
 
             #fill in pairDict
             currPair = (firstPos, secondPos)
-            self.pairDict[currPair] = [firstSA, secondSA, invSD, invTD]
+            self.pairDict[currPair] = map(float, ["1", firstSA, secondSA, invSD, invTD])
 
         self.posList = sorted(map(int, self.aaDict.keys()))
 
+    
+    def __constructSolvers__(self, coefFiles):
+	solvers = {}
+
+	for f in coefFiles:
+		currCatName = AApairwise.__catPattern.search(f).group(1)
+		currFile = open(f, "r")
+            	currDat = currFile.readlines()
+            	currFile.close()
+		solvers[currCatName] = aaProbSolver(currDat)
+
+	return solvers
 
     def getAAprob_onePos(self, pos):
         aaProbs = []
-        tmptotal = 0
         for aa in aaList:
+	    currAAprob = 0
+	    currLogP = 0
             #calculate prob for this aa
             #first order
-            firstOrderProb = self.firstOrderSolver.getCatProb(aa, [1,30])
-            tmptotal += firstOrderProb
-            #simple check: first order probs should sum up to 1
-
+	    firstOrderX = [1, float(self.saDict[pos])]
+            firstOrderProb = self.firstOrderSolver.getCatProb(aa, firstOrderX)
             #second order
+	    beforeAAs = []
+	    afterAAs = []
+	    if pos in self.secondPosDict.keys():
+		beforeAAs = self.secondPosDict[pos]
 
-            #total prob
-            
-            ##add total prob to aaProb
-        print "the total:" + str(tmptotal)
+		#deal with P(pos=second|first) prob calculation
+		for firstAA_pos in beforeAAs:
+			tmpX = self.pairDict[(firstAA_pos, pos)]
+			currLogP += math.log(self.secondCondFirstSolvers[self.aaDict[firstAA_pos]].getCatProb(aa, tmpX))
 
+		nBefore = len(beforeAAs)
+	    else:
+		nBefore = 0
+	    if pos in self.firstPosDict.keys():    
+		afterAAs = self.firstPosDict[pos]
+
+		#deal with P(pos=first|second) prob calculation
+		for secondAA_pos in afterAAs:
+			tmpX = self.pairDict[(pos, secondAA_pos)]
+			currLogP += math.log(self.firstCondSecondSolvers[self.aaDict[secondAA_pos]].getCatProb(aa, tmpX))
+
+	    	nAfter = len(afterAAs)
+	    else:
+		nAfter = 0
+
+	    currLogP = currLogP - (nBefore + nAfter - 1) * math.log(firstOrderProb)
+	    currAAprob = math.exp(currLogP)
+	    aaProbs.append(currAAprob)
+	sumProb = sum(aaProbs)
+	aaProbs = [x/sumProb for x in aaProbs]
+
+	maxProb = max(aaProbs)
+	maxAA = aaList[aaProbs.index(maxProb)]
+	trueAA = self.aaDict[pos]
+	trueProb = aaProbs[aaList.index(trueAA)]
+	return pos + "," + maxAA + "," + str(maxProb) + "," + trueAA + "," + str(trueProb) + "," + ",".join(map(str, aaProbs)) + "\n"
+
+    def getAAprob_allPos(self, outputFile):
+	f = open(outputFile, "w")
+	for i in self.posList:
+		resultLine = self.getAAprob_onePos(str(i))
+		f.write(resultLine)
+	f.close()
 
 if  __name__ =='__main__':
     inputFile = sys.argv[1]
-    #outputFile = sys.argv[2]
+    outputFile = sys.argv[2]
     AApw = AApairwise(inputFile)
-    AApw.getAAprob_onePos(1)
+    AApw.getAAprob_allPos(outputFile)

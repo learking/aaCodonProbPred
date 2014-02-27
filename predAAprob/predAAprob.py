@@ -1,10 +1,18 @@
 import sys
+from aaProbSolver import *
+
+#coef file and folders
+firstOrderCoefFile = '/home/kuangyu/workspace/aaCodonProbPred/coefs/aa_sa_coef.txt'
 
 #'L' is the reference codon
 aaList = ['A','C','D','E','F','G','H','I','K','L','M','N','P','Q','R','S','T','V','W','Y']
 
 class AApairwise:
     def __init__(self, pwFile):
+        #init solvers
+        ## first order solver
+        self.firstOrderSolver = aaProbSolver(firstOrderCoefFile)
+
         self.aaDict = dict()
         self.saDict = dict()
         self.firstPosDict = dict()
@@ -56,6 +64,7 @@ class AApairwise:
 
         self.posList = sorted(map(int, self.aaDict.keys()))
 
+'''
     def getAAprob_onePos(self, pos):
         aaProbs = []
         for aa in aaList:
@@ -70,6 +79,7 @@ class AApairwise:
             #total prob
             
             ##add total prob to aaProbs
+'''
 
 if  __name__ =='__main__':
     inputFile = sys.argv[1]

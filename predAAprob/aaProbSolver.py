@@ -32,8 +32,6 @@ class aaProbSolver:
         catExp = {}
         expSum = 0
         for cat in self.catCoef.keys():
-            print self.catCoef[cat]
-            print X
             tmpExp = math.exp(np.dot(self.catCoef[cat], X))
             catExp[cat] = tmpExp
             expSum += tmpExp

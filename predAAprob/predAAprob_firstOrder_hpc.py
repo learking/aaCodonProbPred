@@ -9,8 +9,8 @@ aaList = ['A','C','D','E','F','G','H','I','K','L','M','N','P','Q','R','S','T','V
 
 #coef file and folders
 firstOrderCoefFile = '/home/kwang2/scripts/aaCodonProbPred/coefs/aa_sa_coef.txt'
-firstCondSecondFiles = glob.glob("/home/kwang2/scripts/aaCodonProbPred/coefs/aa_firstCondSecond_coefs/*.txt")
-secondCondFirstFiles = glob.glob("/home/kwang2/scripts/aaCodonProbPred/coefs/aa_secondCondFirst_coefs/*.txt")
+#firstCondSecondFiles = glob.glob("/home/kwang2/scripts/aaCodonProbPred/coefs/aa_firstCondSecond_coefs/*.txt")
+#secondCondFirstFiles = glob.glob("/home/kwang2/scripts/aaCodonProbPred/coefs/aa_secondCondFirst_coefs/*.txt")
 
 class AApairwise:
     
@@ -26,9 +26,9 @@ class AApairwise:
 
 	## second order solvers
 	### first conditioned on second
-	self.firstCondSecondSolvers = self.__constructSolvers__(firstCondSecondFiles)
+	#self.firstCondSecondSolvers = self.__constructSolvers__(firstCondSecondFiles)
 	### second conditioned on first
-	self.secondCondFirstSolvers = self.__constructSolvers__(secondCondFirstFiles)
+	#self.secondCondFirstSolvers = self.__constructSolvers__(secondCondFirstFiles)
 
         self.aaDict = dict()
         self.saDict = dict()

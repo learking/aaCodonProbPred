@@ -6,5 +6,5 @@ for f in /home/kwang2/data/newData_Feb3_pwNACCESS_noMismatch/*.pw; do
         fname=$(basename $f)
 	resultFile=$resultPath${fname%.pw}".csv"
 	#echo $resultFile
-	sbatch -o $fname.slurmlog predAAprob_allProteins_firstOrder.sh $f $resultFile  &
+	python /home/kwang2/scripts/aaCodonProbPred/predAAprob/predAAprob_firstOrder_hpc.py $f $resultFile
 done

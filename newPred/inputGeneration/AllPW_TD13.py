@@ -131,9 +131,9 @@ def getSumInput(inputFile, outFile):
     fOutput = open(outFile, "w")
     for currPos in posIntList:
         #no TD cutoff version
-        currResult = posDict[str(currPos)].aa_TD2str()
+        #currResult = posDict[str(currPos)].aa_TD2str()
         #TD cutoff version
-        #currResult = posDict[str(currPos)].aa_TD2str_cutoff(13)
+        currResult = posDict[str(currPos)].aa_TD2str_cutoff(13)
 
         finalResult = str(currPos) + "," + currResult + "\n"
         fOutput.write(finalResult)
